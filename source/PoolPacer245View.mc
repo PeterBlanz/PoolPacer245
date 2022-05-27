@@ -17,11 +17,7 @@ class GarminTestProjectView extends WatchUi.DataField
         DataField.initialize();
         _timerSeconds = 0.0f;
         _vibeData = [new Attention.VibeProfile(100, 300), new Attention.VibeProfile(0, 300), new Attention.VibeProfile(100, 300), new Attention.VibeProfile(0, 300), new Attention.VibeProfile(100, 300)];
-        var pace = Application.getApp().getProperty("targetPace");
-        
-        // TEMP: force pace until (beta) publishing
-        pace = 125;
-        
+        var pace = Application.getApp().getProperty("targetPace");        
         _interval = 0.25f * (pace == null ? 120 : pace);
         _nAlerts = 1;
 	    _nextAlert = _interval;
