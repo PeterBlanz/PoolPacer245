@@ -6,7 +6,6 @@ import Toybox.Attention;
 
 class GarminTestProjectView extends WatchUi.DataField
 {
-    hidden var _timerSeconds as Float;
     hidden var _nextAlert as Float;
     hidden var _nAlerts as Number;
     hidden var _interval as Float;
@@ -14,12 +13,21 @@ class GarminTestProjectView extends WatchUi.DataField
 
     function initialize()
     {
+    	// basic initialization
         DataField.initialize();
-        _timerSeconds = 0.0f;
-        _vibeData = [new Attention.VibeProfile(100, 300), new Attention.VibeProfile(0, 300), new Attention.VibeProfile(100, 300), new Attention.VibeProfile(0, 300), new Attention.VibeProfile(100, 300)];
+        _nAlerts = 1;
+        
+        // create vibration sequence
+        _vibeData = new[Application.getApp().getProperty("vibrationCount") * 2 - 1];
+        var period = Application.getApp().getProperty("vibrationPeriod");
+        for(var i = 0; i < _vibeData.size(); i++)
+        {
+        	_vibeData[i] = new Attention.VibeProfile(i % 2 == 0 ? 100 : 0, period);
+        }
+        
+        // initialize alarm interval
         var pace = Application.getApp().getProperty("targetPace");        
         _interval = 0.25f * (pace == null ? 120 : pace);
-        _nAlerts = 1;
 	    _nextAlert = _interval;
     }
 
@@ -56,15 +64,14 @@ class GarminTestProjectView extends WatchUi.DataField
             valueView.locY = valueView.locY + 7;
         }
 
-        (View.findDrawableById("label") as Text).setText("Elapsed / Alert");
+        (View.findDrawableById("label") as Text).setText("Next alert (s)");
     }
 
     // The given info object contains all the current workout information. Calculate a value and save it locally in this method.
     // Note that compute() and onUpdate() are asynchronous, and there is no guarantee that compute() will be called before onUpdate().
     function compute(info as Activity.Info) as Void
     {
-	    _timerSeconds = (info.timerTime as Number) * 0.001f;
-	    if(_timerSeconds >= _nextAlert)
+	    if((info.timerTime as Number) * 0.001f >= _nextAlert)
 	    {
 	    	_nAlerts += 1;
 	    	_nextAlert = _nAlerts * _interval;
@@ -88,7 +95,7 @@ class GarminTestProjectView extends WatchUi.DataField
         {
             value.setColor(Graphics.COLOR_BLACK);
         }
-        value.setText(_timerSeconds.format("%.0f") + "/" + _nextAlert.format("%.1f"));
+        value.setText(_nextAlert.format("%.2f"));
 
         // call parent's onUpdate(dc) to redraw the layout
         View.onUpdate(dc);
