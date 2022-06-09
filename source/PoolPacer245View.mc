@@ -4,7 +4,7 @@ import Toybox.Lang;
 import Toybox.WatchUi;
 import Toybox.Attention;
 
-class GarminTestProjectView extends WatchUi.DataField
+class PoolPacer245View extends WatchUi.DataField
 {
     hidden var _nextAlert as Float;
     hidden var _nAlerts as Number;
